@@ -3,22 +3,22 @@ import os
 import json
 from web3 import Web3
 
-# Load environment variables
+
 load_dotenv()
 
-# Configuration
+
 CONFIG = {
     "rpc_url": os.getenv("RPC_URL"),
     "private_key": os.getenv("PRIVATE_KEY"),
     "multiaccount_address": os.getenv("MULTIACCOUNT_ADDRESS"),
-    "erc20_address": os.getenv("COLLATERAL_ADDRESS"),  # Address of the collateral token
+    "erc20_address": os.getenv("COLLATERAL_ADDRESS"),  
 }
 
 class MultiAccountClient:
     def __init__(self, config):
         self.config = config
         
-        # Load ABI
+        
         multiaccount_abi_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "abi", "MultiAccount.json"))
         erc20_abi_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "abi", "ERC20.json"))
         
@@ -28,7 +28,7 @@ class MultiAccountClient:
         with open(erc20_abi_path, "r") as abi_file:
             self.erc20_abi = json.load(abi_file)
         
-        # Initialize Web3
+        
         self.w3 = Web3(Web3.HTTPProvider(config["rpc_url"]))
         self.account = self.w3.eth.account.from_key(config["private_key"])
         self.multiaccount = self.w3.eth.contract(
@@ -43,7 +43,7 @@ class MultiAccountClient:
     def approve_erc20(self, spender_address: str, amount: int):
         """Approve the MultiAccount contract to spend ERC20 tokens"""
         try:
-            # Build transaction
+            
             txn = self.erc20.functions.approve(
                 Web3.to_checksum_address(spender_address),
                 amount
@@ -54,12 +54,12 @@ class MultiAccountClient:
                 "gasPrice": self.w3.eth.gas_price,
             })
             
-            # Sign and send transaction
+            
             signed_txn = self.w3.eth.account.sign_transaction(txn, private_key=self.config["private_key"])
             tx_hash = self.w3.eth.send_raw_transaction(signed_txn.raw_transaction)
             print(f"Approval transaction sent: {tx_hash.hex()}")
             
-            # Wait for receipt
+            
             self.w3.eth.wait_for_transaction_receipt(tx_hash)
             print("Approval transaction confirmed.")
         except Exception as e:
@@ -69,7 +69,7 @@ class MultiAccountClient:
     def deposit_and_allocate_for_account(self, account_address: str, amount: int):
         """Deposit and allocate funds for a specific account"""
         try:
-            # Build transaction
+            
             txn = self.multiaccount.functions.depositAndAllocateForAccount(
                 Web3.to_checksum_address(account_address),
                 amount
@@ -80,12 +80,12 @@ class MultiAccountClient:
                 "gasPrice": self.w3.eth.gas_price,
             })
             
-            # Sign and send transaction
+            
             signed_txn = self.w3.eth.account.sign_transaction(txn, private_key=self.config["private_key"])
             tx_hash = self.w3.eth.send_raw_transaction(signed_txn.raw_transaction)
             print(f"Deposit and allocate transaction sent: {tx_hash.hex()}")
             
-            # Wait for receipt
+            
             self.w3.eth.wait_for_transaction_receipt(tx_hash)
             print("Deposit and allocate transaction confirmed.")
         except Exception as e:
@@ -96,15 +96,15 @@ def main():
     """Main function to demonstrate depositing and allocating for an account"""
     client = MultiAccountClient(CONFIG)
     
-    # Example: Parameters for depositing and allocating funds
-    sub_account_address = "0x980b2CaEF214358cF9e7566372c7c2b9D7c2Da83"  # Replace with the actual account address
-    deposit_amount = Web3.to_wei(1, "ether")  # Replace with the desired deposit amount in wei
     
-    # Step 1: Approve the MultiAccount contract to spend the ERC20 tokens
+    sub_account_address = "0x4921a5fC974d5132b4eba7F8697236fc5851a3fA"  
+    deposit_amount = Web3.to_wei(100, "ether")  
+    
+    
     print("Approving ERC20 tokens...")
     client.approve_erc20(CONFIG["multiaccount_address"], deposit_amount)
     
-    # Step 2: Deposit and allocate the approved amount for the account
+    
     print("Depositing and allocating for account...")
     client.deposit_and_allocate_for_account(sub_account_address, deposit_amount)
 
