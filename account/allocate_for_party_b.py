@@ -19,8 +19,8 @@ w3 = Web3(Web3.HTTPProvider(RPC_URL))
 account = w3.eth.account.from_key(PRIVATE_KEY)
 diamond = w3.eth.contract(address=Web3.to_checksum_address(DIAMOND_ADDRESS), abi=DIAMOND_ABI)
 
-AMOUNT = w3.to_wei(1, "ether")  # Adjust decimals as needed
-PARTY_A = "0xEb42F3b1aC3b1552138C7D30E9f4e0eF43229542"  # Replace with the target Party A address
+AMOUNT = w3.to_wei(100, "ether")  # Adjust decimals as needed
+PARTY_A = "0x4921a5fC974d5132b4eba7F8697236fc5851a3fA"  # Replace with the target Party A address
 PARTY_A = Web3.to_checksum_address(PARTY_A)
 
 def main():

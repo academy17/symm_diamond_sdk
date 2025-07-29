@@ -23,7 +23,7 @@ CONFIG = {
     
     # Trade settings
     "symbol_id": 4, #XRP
-    "party_b_whitelist": ["0x5044238ea045585C704dC2C6387D66d29eD56648"],
+    "party_b_whitelist": ["0x3B5aC601c7bB74999AB3135fa43cbDBc6aB74570"],
     "quantity": "6",
     "leverage": 1,
     "position_type": 0,  # 0=LONG, 1=SHORT
@@ -202,7 +202,7 @@ class MultiAccountTradeClient:
             )
             print(f"Adjusted price: {adjusted_price}")
             
-            # 5. Convert parameters
+            # 5. Encode the parameters
             party_bs_white_list = [Web3.to_checksum_address(addr) for addr in self.config["party_b_whitelist"]]
             quantity_wei = self.w3.to_wei(self.config["quantity"], "ether")
             

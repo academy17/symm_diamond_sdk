@@ -59,7 +59,7 @@ def main():
     client = AcceptCancelRequestClient(CONFIG)
     
     # Example: Quote ID to accept cancel request
-    quote_id = 1  # Replace with the actual quote ID
+    quote_id = 2222  # Replace with the actual quote ID
     
     receipt = client.accept_cancel_request(quote_id)
     print(f"Accept cancel request transaction receipt: {receipt}")

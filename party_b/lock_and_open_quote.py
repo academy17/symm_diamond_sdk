@@ -174,9 +174,9 @@ def main():
     client = LockAndOpenQuoteClient(CONFIG)
     
     # Example: Parameters for locking and opening a quote
-    quote_id = 2213  # Replace with the actual quote ID
+    quote_id = 2223  # Replace with the actual quote ID
     filled_amount = Web3.to_wei(6, "ether")  # Replace with the filled amount
-    opened_price = Web3.to_wei(3.3, "ether")  # Replace with the opened price
+    opened_price = Web3.to_wei(3.1, "ether")  # Replace with the opened price
     
     # Party A is the sub-account (counterparty)
     party_a_address = client.config["sub_account_address"]

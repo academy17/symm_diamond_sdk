@@ -74,13 +74,16 @@ class LockQuoteClient:
 
     def lock_quote(self, quote_id: int, upnl_sig):
         """Lock a quote by providing a valid Muon signature"""
+        # Calculate gas price with a 1.5x buffer
+        current_gas_price = self.w3.eth.gas_price
+        buffered_gas_price = int(current_gas_price * 1.5)  # Increase gas price by 50%
         try:
             # Build transaction
             txn = self.diamond.functions.lockQuote(quote_id, upnl_sig).build_transaction({
                 "from": self.account.address,
                 "nonce": self.w3.eth.get_transaction_count(self.account.address, "pending"),
-                "gas": 300000,
-                "gasPrice": self.w3.eth.gas_price,
+                "gas": 2000000,
+                "gasPrice": buffered_gas_price,
             })
             
             # Sign and send transaction
@@ -101,7 +104,7 @@ def main():
     client = LockQuoteClient(CONFIG)
     
     # Example: Parameters for locking a quote
-    quote_id = 2213  # Replace with the actual quote ID
+    quote_id = 2217  # Replace with the actual quote ID
     party_a_address = "0x4921a5fC974d5132b4eba7F8697236fc5851a3fA"  # Replace with Party A's address
     party_b_address = client.account.address  # Party B is the sender
     chain_id = CONFIG["chain_id"]

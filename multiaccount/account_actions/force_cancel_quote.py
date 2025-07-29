@@ -3,10 +3,10 @@ import os
 import json
 from web3 import Web3
 
-# Load environment variables
+
 load_dotenv()
 
-# Configuration
+
 CONFIG = {
     "rpc_url": os.getenv("RPC_URL"),
     "private_key": os.getenv("PRIVATE_KEY"),
@@ -19,7 +19,7 @@ class MultiAccountForceCancelQuoteClient:
     def __init__(self, config):
         self.config = config
         
-        # Load ABIs
+        
         symmio_abi_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "abi", "symmio.json"))
         multiaccount_abi_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "abi", "MultiAccount.json"))
         
@@ -29,7 +29,7 @@ class MultiAccountForceCancelQuoteClient:
         with open(multiaccount_abi_path, "r") as abi_file:
             self.multiaccount_abi = json.load(abi_file)
         
-        # Initialize Web3
+        
         self.w3 = Web3(Web3.HTTPProvider(config["rpc_url"]))
         self.account = self.w3.eth.account.from_key(config["private_key"])
         self.diamond = self.w3.eth.contract(
@@ -44,20 +44,20 @@ class MultiAccountForceCancelQuoteClient:
     def force_cancel_quote_via_multiaccount(self, quote_id: int):
         """Force cancel a quote via MultiAccount"""
         try:
-            # 1. Encode the forceCancelQuote function call
+            
             force_cancel_txn = self.diamond.functions.forceCancelQuote(
                 quote_id
             ).build_transaction({
                 "from": self.account.address,
                 "gas": 200000,
                 "gasPrice": self.w3.eth.gas_price,
-                "nonce": 0,  # Dummy nonce, we only need the data
+                "nonce": 0,  
             })
 
-            # Extract the encoded data from the transaction
+            
             encoded_force_cancel = force_cancel_txn["data"]
 
-            # 2. Build and send the _call transaction via MultiAccount
+            
             txn = self.multiaccount.functions._call(
                 Web3.to_checksum_address(self.config["sub_account_address"]),
                 [encoded_force_cancel]
@@ -68,12 +68,12 @@ class MultiAccountForceCancelQuoteClient:
                 "gasPrice": self.w3.eth.gas_price,
             })
 
-            # 3. Sign and send the transaction
+            
             signed_txn = self.w3.eth.account.sign_transaction(txn, private_key=self.config["private_key"])
             tx_hash = self.w3.eth.send_raw_transaction(signed_txn.raw_transaction)
             print(f"Transaction sent: {tx_hash.hex()}")
 
-            # 4. Wait for receipt
+            
             receipt = self.w3.eth.wait_for_transaction_receipt(tx_hash)
             print("Transaction confirmed.")
             return receipt
@@ -85,8 +85,8 @@ def main():
     """Main function to demonstrate forcing to cancel a quote via MultiAccount"""
     client = MultiAccountForceCancelQuoteClient(CONFIG)
     
-    # Example: Quote ID to force cancel
-    quote_id = 2209  # Replace with the actual quote ID
+    
+    quote_id = 2217
     
     receipt = client.force_cancel_quote_via_multiaccount(quote_id)
 
