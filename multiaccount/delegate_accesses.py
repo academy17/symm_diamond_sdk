@@ -3,10 +3,8 @@ import os
 import json
 from web3 import Web3
 
-# Load environment variables
 load_dotenv()
 
-# Configuration
 CONFIG = {
     "rpc_url": os.getenv("RPC_URL"),
     "private_key": os.getenv("PRIVATE_KEY"),
@@ -19,12 +17,10 @@ class MultiAccountClient:
     def __init__(self, config):
         self.config = config
         
-        # Load ABI
         abi_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "abi", "MultiAccount.json"))
         with open(abi_path, "r") as abi_file:
             self.abi = json.load(abi_file)
         
-        # Initialize Web3
         self.w3 = Web3(Web3.HTTPProvider(config["rpc_url"]))
         self.account = self.w3.eth.account.from_key(config["private_key"])
         self.multiaccount = self.w3.eth.contract(
